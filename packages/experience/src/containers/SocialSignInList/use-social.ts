@@ -52,11 +52,16 @@ const useSocial = () => {
        * Check if the user has agreed to the terms and privacy policy before navigating to the 3rd-party social sign-in page
        * when the policy is set to `Manual`
        */
-      if (agreeToTermsPolicy === AgreeToTermsPolicy.Manual && !(await termsValidation())) {
+
+      const { id: connectorId, target } = connector;
+
+      if (
+        target !== 'Institution' &&
+        agreeToTermsPolicy === AgreeToTermsPolicy.Manual &&
+        !(await termsValidation())
+      ) {
         return;
       }
-
-      const { id: connectorId } = connector;
 
       const state = generateState();
       storeState(state, connectorId);
@@ -69,7 +74,6 @@ const useSocial = () => {
 
       if (error) {
         await handleError(error);
-
         return;
       }
 
@@ -81,14 +85,16 @@ const useSocial = () => {
 
       setVerificationId(VerificationType.Social, verificationId);
 
-      // Invoke native social sign-in flow
       if (isNativeWebview()) {
         nativeSignInHandler(authorizationUri, connector);
-
         return;
       }
 
-      // Invoke web social sign-in flow
+      if (target === 'Institution') {
+        await redirectTo(authorizationUri);
+        return;
+      }
+
       await redirectTo(authorizationUri);
     },
     [

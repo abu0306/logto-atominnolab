@@ -56,7 +56,7 @@ const SingleSignOnConnectors = () => {
               target={connectorName}
               isLoading={loadingConnectorId === connector.id}
               onClick={() => {
-                void handleSubmit(connector.id);
+                handleSubmit(connector.id);
               }}
             />
           );

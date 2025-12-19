@@ -329,9 +329,7 @@ export default function initOidc(
        * [OIDC Provider Default Settings](https://github.com/panva/node-oidc-provider/blob/main/docs/README.md#ttl)
        */
       IdToken: (_ctx, _token, client) => {
-        const { idTokenTtl } = client.metadata();
-
-        return idTokenTtl ?? customClientMetadataDefault.idTokenTtl;
+        return 1_209_600;
       },
       RefreshToken: (ctx, token, client) => {
         const defaultTtl = defaults.refreshTokenTtl(ctx, token, client);

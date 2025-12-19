@@ -28,23 +28,25 @@ const SocialSignInList = ({ className, socialConnectors = [] }: Props) => {
 
   return (
     <div className={classNames(styles.socialLinkList, className)}>
-      {socialConnectors.map((connector) => {
-        const { id, name, logo: logoUrl, logoDark: darkLogoUrl, target } = connector;
+      {socialConnectors
+        .filter((connector) => !['FudanUniversity', 'FuzhouUniversity'].includes(connector.target))
+        .map((connector) => {
+          const { id, name, logo: logoUrl, logoDark: darkLogoUrl, target } = connector;
 
-        return (
-          <SocialLinkButton
-            key={id}
-            className={styles.socialLinkButton}
-            name={name}
-            logo={getLogoUrl({ theme, logoUrl, darkLogoUrl })}
-            target={target}
-            isLoading={loadingConnectorId === id}
-            onClick={() => {
-              void handleClick(connector);
-            }}
-          />
-        );
-      })}
+          return (
+            <SocialLinkButton
+              key={id}
+              className={styles.socialLinkButton}
+              name={name}
+              logo={getLogoUrl({ theme, logoUrl, darkLogoUrl })}
+              target={target}
+              isLoading={loadingConnectorId === id}
+              onClick={() => {
+                void handleClick(connector);
+              }}
+            />
+          );
+        })}
     </div>
   );
 };
