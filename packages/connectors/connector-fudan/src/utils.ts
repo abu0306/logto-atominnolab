@@ -166,3 +166,8 @@ export const constructAuthorizationUri = (
   `${authorizationEndpoint}?${new URLSearchParams(
     removeUndefinedKeys(snakecaseKeys(queryParameters))
   ).toString()}`;
+
+export const genDigitRandom = (number_: number) => {
+  const rand = Math.floor(Math.random() * 10 ** number_); // 0~99999999（8位随机数）
+  return rand.toString().padStart(number_, '0');
+};

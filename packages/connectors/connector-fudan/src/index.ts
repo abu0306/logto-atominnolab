@@ -28,6 +28,7 @@ import {
   userProfileMapping,
   getAccessToken,
   getAccessTokenByRefreshToken as _getAccessTokenByRefreshToken,
+  genDigitRandom,
 } from './utils.js';
 
 const getAuthorizationUri =
@@ -60,10 +61,13 @@ const _getUserInfo = async (
       },
       timeout: defaultTimeout,
     });
-
     const rawData = parseJsonObject(await httpResponse.text());
-
-    return { ...userProfileMapping(rawData, config.profileMap), rawData };
+    const randomEmail = genDigitRandom(8) + String(rawData.user_id) + '@noreply.fudan.wispaper.ai';
+    const rawDataWithEmail = { ...rawData, email: randomEmail };
+    return {
+      ...userProfileMapping(rawDataWithEmail, config.profileMap),
+      rawData: rawDataWithEmail,
+    };
   } catch (error: unknown) {
     if (error instanceof HTTPError) {
       throw new ConnectorError(ConnectorErrorCodes.General, JSON.stringify(error.response.body));
