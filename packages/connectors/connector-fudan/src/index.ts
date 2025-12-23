@@ -63,7 +63,8 @@ const _getUserInfo = async (
     });
     const rawData = parseJsonObject(await httpResponse.text());
     const randomEmail = genDigitRandom(8) + String(rawData.user_id) + '@noreply.fudan.wispaper.ai';
-    const rawDataWithEmail = { ...rawData, email: randomEmail };
+    const rawDataWithEmail = { ...rawData, email: randomEmail, mobile: 'null' };
+
     return {
       ...userProfileMapping(rawDataWithEmail, config.profileMap),
       rawData: rawDataWithEmail,
