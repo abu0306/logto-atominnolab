@@ -358,7 +358,7 @@ export default function initOidc(
 
         return 60 * 60; // 1 hour in seconds
       },
-      Interaction: 3600 /* 1 hour in seconds */,
+      Interaction: 1_209_600 /* 14 days in seconds */,
       Session: 1_209_600 /* 14 days in seconds */,
       Grant: 1_209_600 /* 14 days in seconds */,
     },
