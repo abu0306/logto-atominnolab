@@ -329,9 +329,7 @@ export default function initOidc(
        * [OIDC Provider Default Settings](https://github.com/panva/node-oidc-provider/blob/main/docs/README.md#ttl)
        */
       IdToken: (_ctx, _token, client) => {
-        const { idTokenTtl } = client.metadata();
-
-        return idTokenTtl ?? customClientMetadataDefault.idTokenTtl;
+        return 1_209_600;
       },
       RefreshToken: (ctx, token, client) => {
         const defaultTtl = defaults.refreshTokenTtl(ctx, token, client);
@@ -358,7 +356,7 @@ export default function initOidc(
 
         return 60 * 60; // 1 hour in seconds
       },
-      Interaction: 1_209_600 /* 14 days in seconds */,
+      Interaction: 3600 /* 1 hour in seconds */,
       Session: 1_209_600 /* 14 days in seconds */,
       Grant: 1_209_600 /* 14 days in seconds */,
     },
