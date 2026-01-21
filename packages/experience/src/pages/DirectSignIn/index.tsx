@@ -1,62 +1,32 @@
 import { GoogleConnector } from '@logto/connector-kit';
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
-import PageContext from '@/Providers/PageContextProvider/PageContext';
 import { LoadingIconWithContainer } from '@/components/LoadingLayer';
 import useSocial from '@/containers/SocialSignInList/use-social';
 import useFallbackRoute from '@/hooks/use-fallback-route';
 import { useSieMethods } from '@/hooks/use-sie';
-import useSingleSignOn from '@/hooks/use-single-sign-on';
-import { logtoGoogleOneTapCookie } from '@/utils/cookies';
 
 import styles from './index.module.scss';
 
 const DirectSignIn = () => {
   const { method, target } = useParams();
-  const { socialConnectors, ssoConnectors } = useSieMethods();
+  const { socialConnectors } = useSieMethods();
   const { invokeSocialSignIn } = useSocial();
-  const invokeSso = useSingleSignOn();
   const fallback = useFallbackRoute();
-  const { experienceSettings } = useContext(PageContext);
 
   useEffect(() => {
-    if (method === 'social') {
-      const social = socialConnectors.find((connector) => connector.target === target);
+    const social = socialConnectors.find((connector) => connector.target === target);
 
-      if (social && social.target === GoogleConnector.target && logtoGoogleOneTapCookie) {
-        // eslint-disable-next-line @silverhand/fp/no-mutation
-        window.location.href = `${window.location.origin}/callback/${experienceSettings?.googleOneTap?.connectorId}`;
-        return;
-      }
-
-      // Continue with non-Google logic immediately
-      if (social && social.target !== GoogleConnector.target) {
-        void invokeSocialSignIn(social);
-        return;
-      }
+    if (social && social.target !== GoogleConnector.target && social.target !== 'Institution') {
+      void invokeSocialSignIn(social);
+      return;
     }
 
-    if (method === 'sso') {
-      const sso = ssoConnectors.find((connector) => connector.id === target);
-
-      if (sso) {
-        void invokeSso(sso.id);
-        return;
-      }
+    if (target !== 'Institution') {
+      window.location.replace('/' + fallback);
     }
-
-    window.location.replace('/' + fallback);
-  }, [
-    fallback,
-    invokeSocialSignIn,
-    invokeSso,
-    method,
-    socialConnectors,
-    ssoConnectors,
-    target,
-    experienceSettings?.googleOneTap?.connectorId,
-  ]);
+  }, [fallback, invokeSocialSignIn, method, socialConnectors, target]);
 
   return (
     <div className={styles.container}>
