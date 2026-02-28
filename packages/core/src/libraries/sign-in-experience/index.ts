@@ -39,6 +39,39 @@ export const createSignInExperienceLibrary = (
   cloudConnection: CloudConnectionLibrary,
   wellKnownCache: WellKnownCache
 ) => {
+  const getConnectorConfirmationPromptData = (target: string, config: unknown) => {
+    if (target !== 'WeChatBridge' || typeof config !== 'object' || !config) {
+      return {};
+    }
+
+    const {
+      wechatConfirmPrompt,
+      wechatConfirmPromptEn,
+      wechatConfirmPromptZhCn,
+    } = config as Record<string, unknown>;
+
+    const confirmationPromptI18n = {
+      ...(typeof wechatConfirmPromptEn === 'string' && wechatConfirmPromptEn.length > 0
+        ? { en: wechatConfirmPromptEn }
+        : {}),
+      ...(typeof wechatConfirmPromptZhCn === 'string' && wechatConfirmPromptZhCn.length > 0
+        ? { 'zh-CN': wechatConfirmPromptZhCn }
+        : {}),
+    };
+
+    const confirmationPrompt =
+      typeof wechatConfirmPrompt === 'string' && wechatConfirmPrompt.length > 0
+        ? wechatConfirmPrompt
+        : undefined;
+
+    return {
+      ...(confirmationPrompt ? { confirmationPrompt } : {}),
+      ...(Object.keys(confirmationPromptI18n).length > 0
+        ? { confirmationPromptI18n }
+        : {}),
+    };
+  };
+
   const {
     customPhrases: { findAllCustomLanguageTags },
     signInExperiences: { findDefaultSignInExperience, updateDefaultSignInExperience },
@@ -212,7 +245,11 @@ export const createSignInExperienceLibrary = (
 
       return [
         ...previous,
-        ...connectors.map(({ metadata, dbEntry: { id } }) => ({ ...metadata, id })),
+        ...connectors.map(({ metadata, dbEntry: { id, config } }) => ({
+          ...metadata,
+          id,
+          ...getConnectorConfirmationPromptData(metadata.target, config),
+        })),
       ];
     }, []);
 

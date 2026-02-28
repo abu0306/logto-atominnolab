@@ -29,7 +29,13 @@ type ForgotPassword = {
 export type ExperienceSocialConnector = Omit<
   ConnectorMetadata,
   'description' | 'configTemplate' | 'formItems' | 'readme' | 'customData'
->;
+> & {
+  confirmationPrompt?: string;
+  confirmationPromptI18n?: {
+    en?: string;
+    'zh-CN'?: string;
+  };
+};
 
 export type FullSignInExperience = Omit<SignInExperience, 'forgotPasswordMethods'> & {
   socialConnectors: ExperienceSocialConnector[];
@@ -62,6 +68,15 @@ export const fullSignInExperienceGuard = SignInExperiences.guard
         formItems: true,
         readme: true,
         customData: true,
+      })
+      .extend({
+        confirmationPrompt: z.string().optional(),
+        confirmationPromptI18n: z
+          .object({
+            en: z.string().optional(),
+            'zh-CN': z.string().optional(),
+          })
+          .optional(),
       })
       .array(),
     ssoConnectors: ssoConnectorMetadataGuard.array(),

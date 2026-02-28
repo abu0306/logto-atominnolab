@@ -5,11 +5,13 @@ import {
   type ExperienceSocialConnector,
 } from '@logto/schemas';
 import { useCallback, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import PageContext from '@/Providers/PageContextProvider/PageContext';
 import UserInteractionContext from '@/Providers/UserInteractionContextProvider/UserInteractionContext';
 import { getSocialAuthorizationUrl } from '@/apis/experience';
 import useApi from '@/hooks/use-api';
+import { usePromiseConfirmModal } from '@/hooks/use-confirm-modal';
 import useErrorHandler from '@/hooks/use-error-handler';
 import useGlobalRedirectTo from '@/hooks/use-global-redirect-to';
 import useTerms from '@/hooks/use-terms';
@@ -18,9 +20,11 @@ import { generateState, storeState, buildSocialLandingUri } from '@/utils/social
 
 const useSocial = () => {
   const { experienceSettings, theme } = useContext(PageContext);
+  const { i18n } = useTranslation();
 
   const handleError = useErrorHandler();
   const asyncInvokeSocialSignIn = useApi(getSocialAuthorizationUrl);
+  const { show: showConfirmModal } = usePromiseConfirmModal();
   const { termsValidation, agreeToTermsPolicy } = useTerms();
   const { setVerificationId } = useContext(UserInteractionContext);
 
@@ -63,6 +67,25 @@ const useSocial = () => {
         return;
       }
 
+      if (target === 'WeChatBridge') {
+        const resolvedLanguage = i18n.resolvedLanguage ?? i18n.language;
+        const i18nPrompt =
+          resolvedLanguage === 'zh-CN' || resolvedLanguage.startsWith('zh-')
+            ? connector.confirmationPromptI18n?.['zh-CN']
+            : connector.confirmationPromptI18n?.en;
+
+        const [isConfirmed] = await showConfirmModal({
+          ModalContent:
+            i18nPrompt ??
+            connector.confirmationPrompt ??
+            'You will be redirected to the WeChat site to continue sign-in. Please confirm to continue.',
+        });
+
+        if (!isConfirmed) {
+          return;
+        }
+      }
+
       const state = generateState();
       storeState(state, connectorId);
 
@@ -101,9 +124,12 @@ const useSocial = () => {
       agreeToTermsPolicy,
       asyncInvokeSocialSignIn,
       handleError,
+      i18n.language,
+      i18n.resolvedLanguage,
       nativeSignInHandler,
       redirectTo,
       setVerificationId,
+      showConfirmModal,
       termsValidation,
     ]
   );

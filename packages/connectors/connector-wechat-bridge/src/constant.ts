@@ -1,0 +1,54 @@
+import type { ConnectorMetadata } from '@logto/connector-kit';
+import { ConnectorConfigFormItemType, ConnectorPlatform } from '@logto/connector-kit';
+
+export const defaultMetadata: ConnectorMetadata = {
+  id: 'wechat-bridge',
+  target: 'WeChatBridge',
+  platform: ConnectorPlatform.Universal,
+  name: {
+    en: 'WeChat',
+    'zh-CN': '微信',
+    'tr-TR': 'WeChat',
+    ko: 'WeChat',
+  },
+  logo: './logo.svg',
+  logoDark: null,
+  description: {
+    en: 'Sign in via WeChat redirect site.',
+    'zh-CN': '通过 微信 跳转站点登录。',
+    'tr-TR': 'WeChat yönlendirme sitesi ile giriş yapın.',
+    ko: 'WeChat 리디렉션 사이트로 로그인합니다.',
+  },
+  readme: './README.md',
+  formItems: [
+    {
+      key: 'wechatUrl',
+      label: 'WeChat Login URL',
+      type: ConnectorConfigFormItemType.Text,
+      required: true,
+      placeholder: '<wechat-login-url>',
+    },
+    {
+      key: 'wechatConfirmPrompt',
+      label: 'Confirm Prompt',
+      type: ConnectorConfigFormItemType.MultilineText,
+      required: false,
+      placeholder: 'Enter the confirmation text shown before redirect',
+    },
+    {
+      key: 'wechatConfirmPromptEn',
+      label: 'Confirm Prompt (EN)',
+      type: ConnectorConfigFormItemType.MultilineText,
+      required: false,
+      placeholder: 'Enter the confirmation text',
+    },
+    {
+      key: 'wechatConfirmPromptZhCn',
+      label: 'Confirm Prompt (zh-CN)',
+      type: ConnectorConfigFormItemType.MultilineText,
+      required: false,
+      placeholder: '输入中文确认提示文案',
+    },
+  ],
+  isTokenStorageSupported: true,
+};
