@@ -60,7 +60,7 @@ const useSocial = () => {
       const { id: connectorId, target } = connector;
 
       if (
-        target !== 'Institution' &&
+        !['Institution', 'WeChatBridge'].includes(target) &&
         agreeToTermsPolicy === AgreeToTermsPolicy.Manual &&
         !(await termsValidation())
       ) {

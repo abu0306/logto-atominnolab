@@ -37,6 +37,7 @@ jest.mock('@/utils/social-connectors', () => ({
 
 const invokeAuthorizationApi = jest.fn();
 const showConfirmModal = jest.fn();
+const termsValidation = jest.fn(async () => true);
 
 const makeConnector = (
   target: string,
@@ -59,10 +60,6 @@ const makeConnector = (
       ...baseConnector.name,
       en: target,
     },
-    description: {
-      ...baseConnector.description,
-      en: target,
-    },
   };
 };
 
@@ -81,7 +78,7 @@ describe('useSocial WeChatBridge confirmation', () => {
       termsAgreement: false,
       isTermsDisabled: true,
       agreeToTermsPolicy: AgreeToTermsPolicy.Automatic,
-      termsValidation: jest.fn(async () => true),
+      termsValidation,
       setTermsAgreement: jest.fn(),
       termsAndPrivacyConfirmModalHandler: jest.fn(async () => true),
     });
@@ -100,6 +97,28 @@ describe('useSocial WeChatBridge confirmation', () => {
       ModalContent:
         'You will be redirected to the WeChat site to continue sign-in. Please confirm to continue.',
     });
+    expect(invokeAuthorizationApi).not.toHaveBeenCalled();
+  });
+
+  it('skips terms modal validation for WeChatBridge when terms policy is manual', async () => {
+    showConfirmModal.mockResolvedValue([false]);
+    (useTerms as jest.MockedFunction<typeof useTerms>).mockReturnValue({
+      termsOfUseUrl: 'https://example.com/terms',
+      privacyPolicyUrl: 'https://example.com/privacy',
+      termsAgreement: false,
+      isTermsDisabled: false,
+      agreeToTermsPolicy: AgreeToTermsPolicy.Manual,
+      termsValidation,
+      setTermsAgreement: jest.fn(),
+      termsAndPrivacyConfirmModalHandler: jest.fn(async () => false),
+    });
+
+    const { result } = renderHook(() => useSocial());
+
+    await result.current.invokeSocialSignIn(makeConnector('WeChatBridge'));
+
+    expect(termsValidation).not.toHaveBeenCalled();
+    expect(showConfirmModal).toHaveBeenCalledTimes(1);
     expect(invokeAuthorizationApi).not.toHaveBeenCalled();
   });
 
