@@ -68,17 +68,25 @@ const useSocial = () => {
       }
 
       if (target === 'WeChatBridge') {
-        const resolvedLanguage = i18n.resolvedLanguage ?? i18n.language;
-        const i18nPrompt =
-          resolvedLanguage === 'zh-CN' || resolvedLanguage.startsWith('zh-')
-            ? connector.confirmationPromptI18n?.['zh-CN']
-            : connector.confirmationPromptI18n?.en;
+        const { resolvedLanguage } = i18n;
+        const isZhLanguage = resolvedLanguage === 'zh-CN' || resolvedLanguage.startsWith('zh-');
+        const i18nPrompt = isZhLanguage
+          ? connector.confirmationPromptI18n?.['zh-CN']
+          : connector.confirmationPromptI18n?.en;
+        const i18nConfirmText = isZhLanguage
+          ? connector.confirmationConfirmTextI18n?.['zh-CN']
+          : connector.confirmationConfirmTextI18n?.en;
+        const i18nCancelText = isZhLanguage
+          ? connector.confirmationCancelTextI18n?.['zh-CN']
+          : connector.confirmationCancelTextI18n?.en;
 
         const [isConfirmed] = await showConfirmModal({
           ModalContent:
             i18nPrompt ??
             connector.confirmationPrompt ??
             'You will be redirected to the WeChat site to continue sign-in. Please confirm to continue.',
+          confirmTextRaw: i18nConfirmText ?? connector.confirmationConfirmText,
+          cancelTextRaw: i18nCancelText ?? connector.confirmationCancelText,
         });
 
         if (!isConfirmed) {

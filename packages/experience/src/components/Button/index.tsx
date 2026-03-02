@@ -22,6 +22,7 @@ type BaseProps = Omit<HTMLProps<HTMLButtonElement>, 'type' | 'size' | 'title'> &
 
 type Props = BaseProps & {
   readonly title: TFuncKey;
+  readonly text?: string;
   readonly icon?: React.ReactNode;
   readonly i18nProps?: Record<string, string>;
 };
@@ -31,6 +32,7 @@ const Button = ({
   type = 'primary',
   size = 'large',
   title,
+  text,
   i18nProps,
   className,
   isDisabled = false,
@@ -64,7 +66,7 @@ const Button = ({
         )}
       >
         <span className={styles.icon}>{isLoadingActive ? <RotatingRingIcon /> : icon}</span>
-        <DynamicT forKey={title} interpolation={i18nProps} />
+        {text ?? <DynamicT forKey={title} interpolation={i18nProps} />}
       </span>
     </button>
   );

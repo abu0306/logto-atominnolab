@@ -35,6 +35,16 @@ export type ExperienceSocialConnector = Omit<
     en?: string;
     'zh-CN'?: string;
   };
+  confirmationConfirmText?: string;
+  confirmationConfirmTextI18n?: {
+    en?: string;
+    'zh-CN'?: string;
+  };
+  confirmationCancelText?: string;
+  confirmationCancelTextI18n?: {
+    en?: string;
+    'zh-CN'?: string;
+  };
 };
 
 export type FullSignInExperience = Omit<SignInExperience, 'forgotPasswordMethods'> & {
@@ -72,6 +82,20 @@ export const fullSignInExperienceGuard = SignInExperiences.guard
       .extend({
         confirmationPrompt: z.string().optional(),
         confirmationPromptI18n: z
+          .object({
+            en: z.string().optional(),
+            'zh-CN': z.string().optional(),
+          })
+          .optional(),
+        confirmationConfirmText: z.string().optional(),
+        confirmationConfirmTextI18n: z
+          .object({
+            en: z.string().optional(),
+            'zh-CN': z.string().optional(),
+          })
+          .optional(),
+        confirmationCancelText: z.string().optional(),
+        confirmationCancelTextI18n: z
           .object({
             en: z.string().optional(),
             'zh-CN': z.string().optional(),

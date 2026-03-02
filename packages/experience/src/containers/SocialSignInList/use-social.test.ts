@@ -42,7 +42,11 @@ const termsValidation = jest.fn(async () => true);
 const makeConnector = (
   target: string,
   confirmationPrompt?: string,
-  confirmationPromptI18n?: ExperienceSocialConnector['confirmationPromptI18n']
+  confirmationPromptI18n?: ExperienceSocialConnector['confirmationPromptI18n'],
+  confirmationConfirmText?: string,
+  confirmationConfirmTextI18n?: ExperienceSocialConnector['confirmationConfirmTextI18n'],
+  confirmationCancelText?: string,
+  confirmationCancelTextI18n?: ExperienceSocialConnector['confirmationCancelTextI18n']
 ): ExperienceSocialConnector => {
   const baseConnector = socialConnectors[0];
 
@@ -56,6 +60,10 @@ const makeConnector = (
     target,
     confirmationPrompt,
     confirmationPromptI18n,
+    confirmationConfirmText,
+    confirmationConfirmTextI18n,
+    confirmationCancelText,
+    confirmationCancelTextI18n,
     name: {
       ...baseConnector.name,
       en: target,
@@ -82,7 +90,9 @@ describe('useSocial WeChatBridge confirmation', () => {
       setTermsAgreement: jest.fn(),
       termsAndPrivacyConfirmModalHandler: jest.fn(async () => true),
     });
-    (useGlobalRedirectTo as jest.MockedFunction<typeof useGlobalRedirectTo>).mockReturnValue(jest.fn());
+    (useGlobalRedirectTo as jest.MockedFunction<typeof useGlobalRedirectTo>).mockReturnValue(
+      jest.fn()
+    );
   });
 
   it('shows confirmation modal for WeChatBridge and stops when canceled', async () => {
@@ -153,6 +163,33 @@ describe('useSocial WeChatBridge confirmation', () => {
     expect(showConfirmModal).toHaveBeenCalledWith({
       ModalContent: '请确认后跳转。',
     });
+    expect(invokeAuthorizationApi).not.toHaveBeenCalled();
+  });
+
+  it('uses zh-CN confirm/cancel button texts when configured', async () => {
+    currentLanguage = 'zh-CN';
+    showConfirmModal.mockResolvedValue([false]);
+
+    const { result } = renderHook(() => useSocial());
+
+    await result.current.invokeSocialSignIn(
+      makeConnector(
+        'WeChatBridge',
+        undefined,
+        undefined,
+        undefined,
+        { en: 'Continue', 'zh-CN': '继续' },
+        undefined,
+        { en: 'Cancel', 'zh-CN': '取消' }
+      )
+    );
+
+    expect(showConfirmModal).toHaveBeenCalledWith(
+      expect.objectContaining({
+        confirmTextRaw: '继续',
+        cancelTextRaw: '取消',
+      })
+    );
     expect(invokeAuthorizationApi).not.toHaveBeenCalled();
   });
 

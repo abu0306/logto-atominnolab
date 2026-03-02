@@ -21,6 +21,8 @@ const AcModal = ({
   children,
   cancelText = 'action.cancel',
   confirmText = 'action.confirm',
+  cancelTextRaw,
+  confirmTextRaw,
   confirmTextI18nProps,
   cancelTextI18nProps,
   onConfirm,
@@ -61,6 +63,7 @@ const AcModal = ({
         <div className={styles.footer}>
           <Button
             title={cancelText}
+            text={cancelTextRaw}
             type="secondary"
             i18nProps={cancelTextI18nProps}
             size="small"
@@ -70,6 +73,7 @@ const AcModal = ({
           {onConfirm && (
             <Button
               title={confirmText}
+              text={confirmTextRaw}
               i18nProps={confirmTextI18nProps}
               size="small"
               isLoading={isConfirmLoading}

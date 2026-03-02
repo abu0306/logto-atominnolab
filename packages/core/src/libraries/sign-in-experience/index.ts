@@ -48,6 +48,12 @@ export const createSignInExperienceLibrary = (
       wechatConfirmPrompt,
       wechatConfirmPromptEn,
       wechatConfirmPromptZhCn,
+      wechatConfirmButtonText,
+      wechatConfirmButtonTextEn,
+      wechatConfirmButtonTextZhCn,
+      wechatCancelButtonText,
+      wechatCancelButtonTextEn,
+      wechatCancelButtonTextZhCn,
     } = config as Record<string, unknown>;
 
     const confirmationPromptI18n = {
@@ -64,10 +70,46 @@ export const createSignInExperienceLibrary = (
         ? wechatConfirmPrompt
         : undefined;
 
+    const confirmationConfirmTextI18n = {
+      ...(typeof wechatConfirmButtonTextEn === 'string' && wechatConfirmButtonTextEn.length > 0
+        ? { en: wechatConfirmButtonTextEn }
+        : {}),
+      ...(typeof wechatConfirmButtonTextZhCn === 'string' && wechatConfirmButtonTextZhCn.length > 0
+        ? { 'zh-CN': wechatConfirmButtonTextZhCn }
+        : {}),
+    };
+
+    const confirmationCancelTextI18n = {
+      ...(typeof wechatCancelButtonTextEn === 'string' && wechatCancelButtonTextEn.length > 0
+        ? { en: wechatCancelButtonTextEn }
+        : {}),
+      ...(typeof wechatCancelButtonTextZhCn === 'string' && wechatCancelButtonTextZhCn.length > 0
+        ? { 'zh-CN': wechatCancelButtonTextZhCn }
+        : {}),
+    };
+
+    const confirmationConfirmText =
+      typeof wechatConfirmButtonText === 'string' && wechatConfirmButtonText.length > 0
+        ? wechatConfirmButtonText
+        : undefined;
+
+    const confirmationCancelText =
+      typeof wechatCancelButtonText === 'string' && wechatCancelButtonText.length > 0
+        ? wechatCancelButtonText
+        : undefined;
+
     return {
       ...(confirmationPrompt ? { confirmationPrompt } : {}),
       ...(Object.keys(confirmationPromptI18n).length > 0
         ? { confirmationPromptI18n }
+        : {}),
+      ...(confirmationConfirmText ? { confirmationConfirmText } : {}),
+      ...(Object.keys(confirmationConfirmTextI18n).length > 0
+        ? { confirmationConfirmTextI18n }
+        : {}),
+      ...(confirmationCancelText ? { confirmationCancelText } : {}),
+      ...(Object.keys(confirmationCancelTextI18n).length > 0
+        ? { confirmationCancelTextI18n }
         : {}),
     };
   };

@@ -9,6 +9,8 @@ export type ModalProps = {
   children: ReactNode;
   cancelText?: TFuncKey;
   confirmText?: TFuncKey;
+  cancelTextRaw?: string;
+  confirmTextRaw?: string;
   cancelTextI18nProps?: Record<string, string>;
   confirmTextI18nProps?: Record<string, string>;
   onConfirm?: () => void;
