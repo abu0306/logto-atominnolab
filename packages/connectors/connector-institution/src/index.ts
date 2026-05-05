@@ -12,10 +12,10 @@ import { fuzhouConnectorConfigGuard } from './types.js';
 
 const getAuthorizationUri =
   (getConfig: GetConnectorConfig): GetAuthorizationUri =>
-  async () => {
+  async ({ state, redirectUri, scope }) => {
     const config = await getConfig(defaultMetadata.id);
     validateConfig(config, fuzhouConnectorConfigGuard);
-    console.log('============config============', config);
+    console.log('============config============', config, state, redirectUri, scope);
     const parsedConfig = fuzhouConnectorConfigGuard.parse(config);
     console.log('=====================', parsedConfig);
     return parsedConfig.institutionUrl;
