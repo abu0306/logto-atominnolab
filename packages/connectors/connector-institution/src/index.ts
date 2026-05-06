@@ -12,20 +12,18 @@ import { fuzhouConnectorConfigGuard } from './types.js';
 
 const getAuthorizationUri =
   (getConfig: GetConnectorConfig): GetAuthorizationUri =>
-  async ({ state, redirectUri, appRedirectUri, scope }) => {
+  async ({ appRedirectUri }) => {
     const config = await getConfig(defaultMetadata.id);
     validateConfig(config, fuzhouConnectorConfigGuard);
-    console.log(
-      '============config============',
-      config,
-      state,
-      redirectUri,
-      appRedirectUri,
-      scope
-    );
-    const parsedConfig = fuzhouConnectorConfigGuard.parse(config);
-    console.log('=====================', parsedConfig);
-    return parsedConfig.institutionUrl;
+    const { institutionUrl } = fuzhouConnectorConfigGuard.parse(config);
+
+    if (typeof appRedirectUri !== 'string') {
+      return institutionUrl;
+    }
+
+    const authorizationUrl = new URL(institutionUrl);
+    authorizationUrl.searchParams.set('app_redirect_uri', appRedirectUri);
+    return authorizationUrl.toString();
   };
 
 const createFuzhouConnector: CreateConnector<SocialConnector> = async ({ getConfig }) => {
