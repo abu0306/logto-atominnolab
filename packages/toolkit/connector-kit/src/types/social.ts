@@ -36,6 +36,7 @@ export type GetAuthorizationUri = (
     jti: string;
     headers: { userAgent?: string };
     scope?: string;
+    appRedirectUri?: string;
   },
   setSession: SetSession
 ) => Promise<string>;

@@ -36,7 +36,11 @@ export const createSocialAuthorizationUrl = async (
     headers: { 'user-agent': userAgent },
   } = ctx.request;
 
-  const { jti } = await provider.interactionDetails(ctx.req, ctx.res);
+  const {
+    jti,
+    params: { redirect_uri: rawAppRedirectUri },
+  } = await provider.interactionDetails(ctx.req, ctx.res);
+  const appRedirectUri = typeof rawAppRedirectUri === 'string' ? rawAppRedirectUri : undefined;
 
   return connector.getAuthorizationUri(
     {
@@ -52,6 +56,7 @@ export const createSocialAuthorizationUrl = async (
       connectorFactoryId: connector.metadata.id,
       jti,
       headers: { userAgent },
+      appRedirectUri,
     },
     async (connectorStorage: ConnectorSession) =>
       assignConnectorSessionResult(ctx, provider, connectorStorage)
