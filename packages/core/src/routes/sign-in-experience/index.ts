@@ -81,7 +81,12 @@ export default function signInExperiencesRoutes<T extends ManagementApiRouter>(
     async (ctx, next) => {
       const {
         query: { removeUnusedDemoSocialConnector },
-        body: { socialSignInConnectorTargets, emailBlocklistPolicy, ...rest },
+        body: {
+          socialSignInConnectorTargets,
+          hiddenSocialSignInConnectorTargets,
+          emailBlocklistPolicy,
+          ...rest
+        },
       } = ctx.guard;
       const {
         languageInfo,
@@ -107,12 +112,18 @@ export default function signInExperiencesRoutes<T extends ManagementApiRouter>(
         )
       );
 
+      const currentSettings = await findDefaultSignInExperience();
+      const availableSocialSignInConnectorTargets =
+        filteredSocialSignInConnectorTargets ?? currentSettings.socialSignInConnectorTargets;
+      const filteredHiddenSocialSignInConnectorTargets = hiddenSocialSignInConnectorTargets?.filter(
+        (target) => availableSocialSignInConnectorTargets.includes(target)
+      );
+
       if (signUp) {
         validateSignUp(signUp, connectors);
       }
 
       if (signIn) {
-        const currentSettings = await findDefaultSignInExperience();
         const { signUp: signUpSettings } = signUp ? { signUp } : currentSettings;
         const { mfa: currentMfa } = mfa ? { mfa } : currentSettings;
         validateSignIn(signIn, signUpSettings, connectors, currentMfa);
@@ -181,6 +192,11 @@ export default function signInExperiencesRoutes<T extends ManagementApiRouter>(
         ...conditional(
           filteredSocialSignInConnectorTargets && {
             socialSignInConnectorTargets: filteredSocialSignInConnectorTargets,
+          }
+        ),
+        ...conditional(
+          filteredHiddenSocialSignInConnectorTargets && {
+            hiddenSocialSignInConnectorTargets: filteredHiddenSocialSignInConnectorTargets,
           }
         ),
         ...conditional(

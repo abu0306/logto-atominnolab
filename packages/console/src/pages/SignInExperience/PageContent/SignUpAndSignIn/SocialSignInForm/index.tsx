@@ -28,7 +28,23 @@ function SocialSignInForm() {
           defaultValue={[]}
           name="socialSignInConnectorTargets"
           render={({ field: { value, onChange } }) => {
-            return <SocialConnectorEditBox value={value} onChange={onChange} />;
+            return (
+              <Controller
+                control={control}
+                defaultValue={[]}
+                name="hiddenSocialSignInConnectorTargets"
+                render={({ field: { value: hiddenValue, onChange: onHiddenChange } }) => {
+                  return (
+                    <SocialConnectorEditBox
+                      value={value}
+                      hiddenValue={hiddenValue}
+                      onChange={onChange}
+                      onHiddenChange={onHiddenChange}
+                    />
+                  );
+                }}
+              />
+            );
           }}
         />
       </FormField>

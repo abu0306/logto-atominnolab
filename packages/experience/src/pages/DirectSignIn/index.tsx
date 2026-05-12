@@ -6,16 +6,19 @@ import { LoadingIconWithContainer } from '@/components/LoadingLayer';
 import useSocial from '@/containers/SocialSignInList/use-social';
 import useFallbackRoute from '@/hooks/use-fallback-route';
 import { useSieMethods } from '@/hooks/use-sie';
+import useSingleSignOn from '@/hooks/use-single-sign-on';
 
 import styles from './index.module.scss';
 
 const DirectSignIn = () => {
   const { method, target } = useParams();
-  const { socialConnectors } = useSieMethods();
+  const { directSocialConnectors, ssoConnectors } = useSieMethods();
   const { invokeSocialSignIn } = useSocial();
+  const invokeSingleSignOn = useSingleSignOn();
   const fallback = useFallbackRoute();
   const hasRunRef = useRef(false);
   const invokeSocialSignInRef = useRef(invokeSocialSignIn);
+  const invokeSingleSignOnRef = useRef(invokeSingleSignOn);
 
   useEffect(() => {
     // eslint-disable-next-line @silverhand/fp/no-mutation
@@ -23,25 +26,48 @@ const DirectSignIn = () => {
   }, [invokeSocialSignIn]);
 
   useEffect(() => {
+    // eslint-disable-next-line @silverhand/fp/no-mutation
+    invokeSingleSignOnRef.current = invokeSingleSignOn;
+  }, [invokeSingleSignOn]);
+
+  useEffect(() => {
     if (hasRunRef.current) {
       return;
     }
 
-    if (method !== 'social') {
+    if (method !== 'social' && method !== 'sso') {
       // eslint-disable-next-line @silverhand/fp/no-mutation
       hasRunRef.current = true;
       window.location.replace('/' + fallback);
       return;
     }
 
-    if (socialConnectors.length === 0) {
+    if (method === 'sso') {
+      if (ssoConnectors.length === 0) {
+        return;
+      }
+
+      // eslint-disable-next-line @silverhand/fp/no-mutation
+      hasRunRef.current = true;
+      const sso = ssoConnectors.find((connector) => connector.id === target);
+
+      if (sso) {
+        void invokeSingleSignOnRef.current(sso.id);
+        return;
+      }
+
+      window.location.replace('/' + fallback);
+      return;
+    }
+
+    if (directSocialConnectors.length === 0) {
       // Wait until connectors are loaded.
       return;
     }
 
     // eslint-disable-next-line @silverhand/fp/no-mutation
     hasRunRef.current = true;
-    const social = socialConnectors.find((connector) => connector.target === target);
+    const social = directSocialConnectors.find((connector) => connector.target === target);
 
     if (social && social.target !== GoogleConnector.target && social.target !== 'Institution') {
       void invokeSocialSignInRef.current(social);
@@ -51,7 +77,7 @@ const DirectSignIn = () => {
     if (target !== 'Institution') {
       window.location.replace('/' + fallback);
     }
-  }, [fallback, method, socialConnectors, target]);
+  }, [directSocialConnectors, fallback, method, ssoConnectors, target]);
 
   return (
     <div className={styles.container}>

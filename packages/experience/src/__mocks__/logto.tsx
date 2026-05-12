@@ -102,6 +102,7 @@ export const mockSignInExperience: SignInExperience = {
     methods: [usernameSignInMethod, emailSignInMethod, phoneSignInMethod],
   },
   socialSignInConnectorTargets: ['BE8QXN0VsrOH7xdWFDJZ9', 'lcXT4o2GSjbV9kg2shZC7'],
+  hiddenSocialSignInConnectorTargets: [],
   signInMode: SignInMode.SignInAndRegister,
   customCss: null,
   customContent: {},
@@ -138,6 +139,7 @@ export const mockSignInExperienceSettings: SignInExperienceResponse = {
     verify: true,
   },
   socialConnectors,
+  directSocialConnectors: socialConnectors,
   ssoConnectors: [],
   signInMode: SignInMode.SignInAndRegister,
   forgotPassword: {
@@ -146,6 +148,7 @@ export const mockSignInExperienceSettings: SignInExperienceResponse = {
   },
   customCss: null,
   customContent: {},
+  hiddenSocialSignInConnectorTargets: [],
   agreeToTermsPolicy: mockSignInExperience.agreeToTermsPolicy,
   customUiAssets: null,
   passwordPolicy: {},

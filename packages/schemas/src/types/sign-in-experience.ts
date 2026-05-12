@@ -49,6 +49,7 @@ export type ExperienceSocialConnector = Omit<
 
 export type FullSignInExperience = Omit<SignInExperience, 'forgotPasswordMethods'> & {
   socialConnectors: ExperienceSocialConnector[];
+  directSocialConnectors: ExperienceSocialConnector[];
   ssoConnectors: SsoConnectorMetadata[];
   forgotPassword: ForgotPassword;
   isDevelopmentTenant: boolean;
@@ -72,6 +73,38 @@ export const fullSignInExperienceGuard = SignInExperiences.guard
   .omit({ forgotPasswordMethods: true })
   .extend({
     socialConnectors: connectorMetadataGuard
+      .omit({
+        description: true,
+        configTemplate: true,
+        formItems: true,
+        readme: true,
+        customData: true,
+      })
+      .extend({
+        confirmationPrompt: z.string().optional(),
+        confirmationPromptI18n: z
+          .object({
+            en: z.string().optional(),
+            'zh-CN': z.string().optional(),
+          })
+          .optional(),
+        confirmationConfirmText: z.string().optional(),
+        confirmationConfirmTextI18n: z
+          .object({
+            en: z.string().optional(),
+            'zh-CN': z.string().optional(),
+          })
+          .optional(),
+        confirmationCancelText: z.string().optional(),
+        confirmationCancelTextI18n: z
+          .object({
+            en: z.string().optional(),
+            'zh-CN': z.string().optional(),
+          })
+          .optional(),
+      })
+      .array(),
+    directSocialConnectors: connectorMetadataGuard
       .omit({
         description: true,
         configTemplate: true,

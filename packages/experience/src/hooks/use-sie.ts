@@ -30,6 +30,7 @@ type UseSieMethodsReturnType = {
   signInMethods: SignInExperienceResponse['signIn']['methods'];
   socialSignInSettings: SignInExperienceResponse['socialSignIn'];
   socialConnectors: SignInExperienceResponse['socialConnectors'];
+  directSocialConnectors: SignInExperienceResponse['directSocialConnectors'];
   ssoConnectors: SignInExperienceResponse['ssoConnectors'];
   signInMode: SignInExperienceResponse['signInMode'] | undefined;
   forgotPassword: SignInExperienceResponse['forgotPassword'] | undefined;
@@ -110,6 +111,7 @@ export const useSieMethods = (): UseSieMethodsReturnType => {
       secondaryIdentifiers,
       socialSignInSettings: experienceSettings?.socialSignIn ?? {},
       socialConnectors: experienceSettings?.socialConnectors ?? [],
+      directSocialConnectors: experienceSettings?.directSocialConnectors ?? [],
       ssoConnectors: experienceSettings?.ssoConnectors ?? [],
       signInMode: experienceSettings?.signInMode,
       forgotPassword: experienceSettings?.forgotPassword,
@@ -125,6 +127,7 @@ export const useSieMethods = (): UseSieMethodsReturnType => {
       secondaryIdentifiers,
       experienceSettings?.socialSignIn,
       experienceSettings?.socialConnectors,
+      experienceSettings?.directSocialConnectors,
       experienceSettings?.ssoConnectors,
       experienceSettings?.signInMode,
       experienceSettings?.forgotPassword,

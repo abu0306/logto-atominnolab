@@ -14,10 +14,12 @@ import styles from './index.module.scss';
 
 type Props = {
   readonly value: string[];
+  readonly hiddenValue: string[];
   readonly onChange: (value: string[]) => void;
+  readonly onHiddenChange: (value: string[]) => void;
 };
 
-function SocialConnectorEditBox({ value, onChange }: Props) {
+function SocialConnectorEditBox({ value, hiddenValue, onChange, onHiddenChange }: Props) {
   const { t } = useTranslation(undefined, { keyPrefix: 'admin_console' });
   const { data: connectorData, error } = useConnectorGroups();
 
@@ -70,8 +72,17 @@ function SocialConnectorEditBox({ value, onChange }: Props) {
           >
             <SelectedConnectorItem
               data={item}
+              isHidden={hiddenValue.includes(item.target)}
+              onHiddenChange={(target, isHidden) => {
+                onHiddenChange(
+                  isHidden
+                    ? [...hiddenValue, target]
+                    : hiddenValue.filter((connectorTarget) => connectorTarget !== target)
+                );
+              }}
               onDelete={(target) => {
                 onChange(value.filter((connectorTarget) => connectorTarget !== target));
+                onHiddenChange(hiddenValue.filter((connectorTarget) => connectorTarget !== target));
               }}
             />
           </DraggableItem>

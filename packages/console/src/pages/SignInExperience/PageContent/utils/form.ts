@@ -49,6 +49,10 @@ export const hasSignUpAndSignInConfigChanged = (
       before.socialSignInConnectorTargets,
       after.socialSignInConnectorTargets
     ) &&
+    !hasSocialTargetsChanged(
+      before.hiddenSocialSignInConnectorTargets,
+      after.hiddenSocialSignInConnectorTargets
+    ) &&
     !hasForgotPasswordMethodsChanged(
       before.forgotPasswordMethods ?? undefined,
       after.forgotPasswordMethods ?? undefined

@@ -8,6 +8,7 @@ import DirectSignIn from '.';
 jest.mock('@/hooks/use-sie', () => ({
   useSieMethods: jest.fn().mockReturnValue({
     socialConnectors,
+    directSocialConnectors: socialConnectors,
     ssoConnectors: mockSsoConnectors,
   }),
 }));
@@ -34,6 +35,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 const useParams = useParamsMock as jest.Mock;
+const useSieMethods = jest.requireMock('@/hooks/use-sie').useSieMethods as jest.Mock;
 
 const assign = jest.fn();
 const replace = jest.fn();
@@ -67,6 +69,11 @@ afterAll(() => {
 describe('DirectSignIn', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    useSieMethods.mockReturnValue({
+      socialConnectors,
+      directSocialConnectors: socialConnectors,
+      ssoConnectors: mockSsoConnectors,
+    });
   });
 
   it('should fallback to the first screen when `directSignIn` is not provided', () => {
@@ -102,6 +109,21 @@ describe('DirectSignIn', () => {
   });
 
   it('should invoke social sign-in when method is social and target is valid (social)', () => {
+    useParams.mockReturnValue({ method: 'social', target: socialConnectors[0]!.target });
+    search.mockReturnValue(`?fallback=sign-in`);
+
+    renderWithPageContext(<DirectSignIn />);
+
+    expect(replace).not.toBeCalled();
+    expect(assign).toBeCalledWith('/social-redirect-to');
+  });
+
+  it('should invoke social sign-in when target is hidden from regular social connectors but available for direct sign-in', () => {
+    useSieMethods.mockReturnValueOnce({
+      socialConnectors: [],
+      directSocialConnectors: socialConnectors,
+      ssoConnectors: mockSsoConnectors,
+    });
     useParams.mockReturnValue({ method: 'social', target: socialConnectors[0]!.target });
     search.mockReturnValue(`?fallback=sign-in`);
 

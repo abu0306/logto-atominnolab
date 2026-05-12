@@ -162,6 +162,7 @@ describe('remove unavailable social connector targets', () => {
     await removeUnavailableSocialConnectorTargets();
     expect(updateDefaultSignInExperience).toBeCalledWith({
       socialSignInConnectorTargets: [socialTarget01, socialTarget02],
+      hiddenSocialSignInConnectorTargets: [],
     });
   });
 });
@@ -181,6 +182,7 @@ describe('getFullSignInExperience()', () => {
     expect(fullSignInExperience).toStrictEqual({
       ...mockSignInExperience,
       socialConnectors: [],
+      directSocialConnectors: [],
       socialSignInConnectorTargets: ['github', 'facebook', 'wechat'],
       ssoConnectors: [
         {
@@ -221,6 +223,10 @@ describe('getFullSignInExperience()', () => {
         { ...mockGithubConnector.metadata, id: mockGithubConnector.dbEntry.id },
         { ...mockGoogleConnector.metadata, id: mockGoogleConnector.dbEntry.id },
       ],
+      directSocialConnectors: [
+        { ...mockGithubConnector.metadata, id: mockGithubConnector.dbEntry.id },
+        { ...mockGoogleConnector.metadata, id: mockGoogleConnector.dbEntry.id },
+      ],
       socialSignInConnectorTargets: ['github', 'facebook', 'google'],
       ssoConnectors: [
         {
@@ -244,6 +250,27 @@ describe('getFullSignInExperience()', () => {
         phone: false,
       },
     });
+  });
+
+  it('should hide selected social connectors from the regular list but keep them available for direct sign-in', async () => {
+    findDefaultSignInExperience.mockResolvedValueOnce({
+      ...mockSignInExperience,
+      socialSignInConnectorTargets: ['github', 'google'],
+      hiddenSocialSignInConnectorTargets: ['google'],
+    } as SignInExperience);
+    getLogtoConnectors.mockResolvedValueOnce([mockGoogleConnector, mockGithubConnector]);
+    findAllCustomProfileFields.mockResolvedValueOnce(mockCustomProfileFields);
+    mockSsoConnectorLibrary.getAvailableSsoConnectors.mockResolvedValueOnce([]);
+
+    const fullSignInExperience = await getFullSignInExperience({ locale: 'en' });
+
+    expect(fullSignInExperience.socialConnectors).toStrictEqual([
+      { ...mockGithubConnector.metadata, id: mockGithubConnector.dbEntry.id },
+    ]);
+    expect(fullSignInExperience.directSocialConnectors).toStrictEqual([
+      { ...mockGithubConnector.metadata, id: mockGithubConnector.dbEntry.id },
+      { ...mockGoogleConnector.metadata, id: mockGoogleConnector.dbEntry.id },
+    ]);
   });
 });
 

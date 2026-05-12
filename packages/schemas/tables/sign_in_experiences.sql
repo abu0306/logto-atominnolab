@@ -16,6 +16,7 @@ create table sign_in_experiences (
   sign_up jsonb /* @use SignUp */ not null,
   social_sign_in jsonb /* @use SocialSignIn */ not null default '{}'::jsonb,
   social_sign_in_connector_targets jsonb /* @use ConnectorTargets */ not null default '[]'::jsonb,
+  hidden_social_sign_in_connector_targets jsonb /* @use ConnectorTargets */ not null default '[]'::jsonb,
   sign_in_mode sign_in_mode not null default 'SignInAndRegister',
   custom_css text,
   custom_content jsonb /* @use CustomContent */ not null default '{}'::jsonb,

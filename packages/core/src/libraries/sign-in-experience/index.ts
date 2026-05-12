@@ -143,11 +143,16 @@ export const createSignInExperienceLibrary = (
         .map(({ metadata: { target } }) => target)
     );
 
-    const { socialSignInConnectorTargets } = await findDefaultSignInExperience();
+    const { hiddenSocialSignInConnectorTargets, socialSignInConnectorTargets } =
+      await findDefaultSignInExperience();
+    const filteredSocialSignInConnectorTargets = socialSignInConnectorTargets.filter((target) =>
+      availableSocialConnectorTargets.includes(target)
+    );
 
     await updateDefaultSignInExperience({
-      socialSignInConnectorTargets: socialSignInConnectorTargets.filter((target) =>
-        availableSocialConnectorTargets.includes(target)
+      socialSignInConnectorTargets: filteredSocialSignInConnectorTargets,
+      hiddenSocialSignInConnectorTargets: hiddenSocialSignInConnectorTargets.filter((target) =>
+        filteredSocialSignInConnectorTargets.includes(target)
       ),
     });
   };
@@ -278,7 +283,7 @@ export const createSignInExperienceLibrary = (
       ? await getActiveSsoConnectors(locale)
       : [];
 
-    const socialConnectors = signInExperience.socialSignInConnectorTargets.reduce<
+    const directSocialConnectors = signInExperience.socialSignInConnectorTargets.reduce<
       ConnectorMetadata[]
     >((previous, connectorTarget) => {
       const connectors = logtoConnectors.filter(
@@ -294,6 +299,10 @@ export const createSignInExperienceLibrary = (
         })),
       ];
     }, []);
+
+    const socialConnectors = directSocialConnectors.filter(
+      ({ target }) => !signInExperience.hiddenSocialSignInConnectorTargets.includes(target)
+    );
 
     /**
      * Get the Google One Tap configuration if the Google connector is enabled and configured.
@@ -384,6 +393,7 @@ export const createSignInExperienceLibrary = (
         organizationOverride ?? {}
       ),
       socialConnectors,
+      directSocialConnectors,
       ssoConnectors,
       forgotPassword: getForgotPassword(),
       isDevelopmentTenant,

@@ -33,6 +33,10 @@
       margin-inline-start: _.unit(1);
       color: var(--color-text-secondary);
     }
+
+    .hiddenCheckbox {
+      margin-inline-start: auto;
+      cursor: default;
+    }
   }
 }
-

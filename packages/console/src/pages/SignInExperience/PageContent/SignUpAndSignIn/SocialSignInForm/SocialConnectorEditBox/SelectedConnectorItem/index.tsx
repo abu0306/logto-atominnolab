@@ -2,6 +2,7 @@ import Draggable from '@/assets/icons/draggable.svg?react';
 import Minus from '@/assets/icons/minus.svg?react';
 import ConnectorLogo from '@/components/ConnectorLogo';
 import UnnamedTrans from '@/components/UnnamedTrans';
+import Checkbox from '@/ds-components/Checkbox';
 import IconButton from '@/ds-components/IconButton';
 import ConnectorPlatformIcon from '@/icons/ConnectorPlatformIcon';
 import type { ConnectorGroup } from '@/types/connector';
@@ -10,11 +11,15 @@ import styles from './index.module.scss';
 
 type Props = {
   readonly data: ConnectorGroup;
+  readonly isHidden: boolean;
+  readonly onHiddenChange: (connectorTarget: string, isHidden: boolean) => void;
   readonly onDelete: (connectorTarget: string) => void;
 };
 
 function SelectedConnectorItem({
   data: { logo, logoDark, target, name, connectors },
+  isHidden,
+  onHiddenChange,
   onDelete,
 }: Props) {
   return (
@@ -29,6 +34,14 @@ function SelectedConnectorItem({
               {platform && <ConnectorPlatformIcon platform={platform} />}
             </div>
           ))}
+        <Checkbox
+          className={styles.hiddenCheckbox}
+          checked={isHidden}
+          label="Hide on regular sign-in pages"
+          onChange={(checked) => {
+            onHiddenChange(target, checked);
+          }}
+        />
       </div>
       <IconButton
         onClick={() => {

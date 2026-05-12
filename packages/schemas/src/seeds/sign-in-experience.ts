@@ -46,6 +46,7 @@ export const createDefaultSignInExperience = (
       ],
     },
     socialSignInConnectorTargets: [],
+    hiddenSocialSignInConnectorTargets: [],
     signInMode: SignInMode.SignInAndRegister,
     customCss: null,
     customContent: {},
