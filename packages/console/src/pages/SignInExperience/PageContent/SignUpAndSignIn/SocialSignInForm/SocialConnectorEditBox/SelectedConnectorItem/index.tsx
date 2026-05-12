@@ -37,7 +37,7 @@ function SelectedConnectorItem({
         <Checkbox
           className={styles.hiddenCheckbox}
           checked={isHidden}
-          label="Hide on regular sign-in pages"
+          label="Hide on sign-in"
           onChange={(checked) => {
             onHiddenChange(target, checked);
           }}
