@@ -16,11 +16,12 @@ import { searchKeys, searchKeysCamelCase } from './search-parameters';
 const parseSignInExperienceResponse = (
   response: SignInExperienceResponse
 ): SignInExperienceResponse => {
-  const { socialConnectors, ...rest } = response;
+  const { directSocialConnectors, socialConnectors, ...rest } = response;
 
   return {
     ...rest,
     socialConnectors: filterSocialConnectors(socialConnectors),
+    directSocialConnectors: filterSocialConnectors(directSocialConnectors),
   };
 };
 

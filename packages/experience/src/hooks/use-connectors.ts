@@ -17,7 +17,7 @@ type FindConnectorByIdResult =
     };
 
 const useConnectors = () => {
-  const { socialConnectors, ssoConnectors } = useSieMethods();
+  const { directSocialConnectors, socialConnectors, ssoConnectors } = useSieMethods();
   const { theme } = useContext(PageContext);
 
   /**
@@ -34,7 +34,9 @@ const useConnectors = () => {
         };
       }
 
-      const socialConnector = socialConnectors.find((connector) => connector.id === connectorId);
+      const socialConnector = [...socialConnectors, ...directSocialConnectors].find(
+        (connector) => connector.id === connectorId
+      );
 
       if (socialConnector) {
         return {
@@ -43,7 +45,7 @@ const useConnectors = () => {
         };
       }
     },
-    [socialConnectors, ssoConnectors]
+    [directSocialConnectors, socialConnectors, ssoConnectors]
   );
 
   const getConnectorLogo = useCallback(
